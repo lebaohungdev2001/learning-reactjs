@@ -1,7 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import TodoItem from "./components/TodoItem";
-
+import {
+  useHistory,
+  useLocation,
+  useRouteMatch,
+} from "react-router-dom/cjs/react-router-dom.min";
+import queryString from "query-string";
 Todo.propTypes = {};
 
 function Todo(props) {
@@ -22,8 +27,19 @@ function Todo(props) {
       status: "new",
     },
   ];
+  const location = useLocation();
+  const history = useHistory();
+  const match = useRouteMatch();
   const [featuresTodo, setFeaturesTodo] = useState(InitfeaturesTodo);
-  const [filterTodo, setFilterTodo] = useState("all");
+  const [filterTodo, setFilterTodo] = useState(() => {
+    const params = queryString.parse(location.search);
+    return params.status || "all";
+  });
+
+  useEffect(() => {
+    const params = queryString.parse(location.search);
+    setFilterTodo(params.status || "all");
+  }, [location.search]);
   const handleOnActive = (item, index) => {
     // console.log(item, index);
     const newFeauturesList = [...featuresTodo];
@@ -36,12 +52,27 @@ function Todo(props) {
 
   const handleShowall = () => {
     setFilterTodo("all");
+    const queryParams = { status: "all" };
+    history.push({
+      pathname: match.path,
+      search: queryString.stringify(queryParams),
+    });
   };
   const handleShowComp = () => {
     setFilterTodo("completed");
+    const queryParams = { status: "completed" };
+    history.push({
+      pathname: match.path,
+      search: queryString.stringify(queryParams),
+    });
   };
   const handleShowNew = () => {
     setFilterTodo("new");
+    const queryParams = { status: "new" };
+    history.push({
+      pathname: match.path,
+      search: queryString.stringify(queryParams),
+    });
   };
   const renderTodo = featuresTodo.filter(
     (todo) => filterTodo === "all" || filterTodo === todo.status
