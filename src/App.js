@@ -6,7 +6,9 @@ import { useEffect, useState } from "react";
 import Pagination from "./features/pagination";
 import ColorBox from "./features/ColorBox";
 import Album from "./features/Album";
+import Todos from "./features/Todo";
 import { Link, Route, Switch } from "react-router-dom";
+import productAPI from "./api/productApi";
 
 function App() {
   const [postList, setPostList] = useState([]);
@@ -19,6 +21,16 @@ function App() {
     _page: 1,
     _limit: 10,
   });
+  useEffect(()=>{
+  const  fetchProducts = async () =>{
+    const params = {
+      _limit: 10
+    }
+      const ProductList = await productAPI.getAll(params);
+      console.log(ProductList);
+    }
+    fetchProducts();
+  },[])
   useEffect(() => {
     async function fetchPostList() {
       try {
@@ -49,17 +61,20 @@ function App() {
         <Link to="/">Home</Link>
       </p>
       <p>
+        <Link to="/todos">Todos</Link>
+      </p>
+      <p>
         <Link to="/color-box">Color box</Link>
       </p>
       <p>
         <Link to="/album">Album</Link>
       </p>
-      {/* <Switch> */}
-      <Route path="/" component={Pagination} />
-      <Route path="/color-box" component={ColorBox} />
-      <Route path="/color-box/123" component={ColorBox} />
-      <Route path="/album" component={Album} />
-      {/* </Switch> */}
+      <Switch>
+        <Route path="/" component={Pagination} exact/>
+        <Route path="/todos" component={Todos}/>
+        <Route path="/color-box" component={ColorBox} />
+        <Route path="/album" component={Album} />
+      </Switch>
       <p>footer</p>
     </div>
   );
